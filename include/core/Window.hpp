@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Exception.hpp"
+#include "core/IWindow.hpp"
 #include <string>
 
 struct GLFWwindow;
@@ -14,7 +15,7 @@ public:
         : BoxelGameException("ウィンドウエラー: " + reason) {}
 };
 
-class Window {
+class Window : public IWindow {
 public:
     Window(int width = 1920, int height = 1080, const std::string& title = "BoxelGame");
     ~Window();
@@ -25,15 +26,16 @@ public:
     Window(Window&&) = delete;
     Window& operator=(Window&&) = delete;
 
-    // ウィンドウ状態チェック
-    bool ShouldClose() const;
+    // IWindow インターフェース実装
+    bool ShouldClose() const override;
+    void SwapBuffers() override;
+    void PollEvents() override;
+    void GetFramebufferSize(int& width, int& height) const override;
     
-    // フレーム処理
-    void SwapBuffers();
-    void PollEvents();
-    
-    // ウィンドウ情報取得
-    void GetFramebufferSize(int& width, int& height) const;
+    // IWindow インターフェース実装
+    int GetWidth() const override { return m_width; }
+    int GetHeight() const override { return m_height; }
+    const std::string& GetTitle() const override { return m_title; }
 
 private:
     GLFWwindow* m_window;

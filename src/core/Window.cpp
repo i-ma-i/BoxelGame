@@ -71,16 +71,14 @@ void Window::InitializeGLFW() {
         throw WindowException("GLFWの初期化に失敗");
     }
     
-    // WSL環境対応：最小限のOpenGL設定
+    // OpenGL設定
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+    spdlog::info("GLFW初期化完了");
     
-    // WSL環境での安定性向上設定
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-    
-    spdlog::info("GLFW初期化完了（WSL互換モード）");
 }
 
 void Window::CreateWindow() {
