@@ -37,3 +37,6 @@ Thumbs.db
 
 # Tracy files
 *.tracy
+
+# Coverage reports
+coverage/

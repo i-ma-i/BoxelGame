@@ -33,7 +33,7 @@ jobs:
           libxi-dev \
           libxxf86vm-dev \
           xvfb \
-          gcov \
+          gcc \
           lcov
 
     - name: Configure CMake with coverage
@@ -56,16 +56,13 @@ jobs:
         # Create coverage directory
         mkdir -p coverage
         
-        # Generate gcov files
-        find build -name "*.gcno" -exec gcov {} \;
-        
         # Generate lcov report
         lcov --capture --directory build --output-file coverage/coverage.info
         
         # Filter out external libraries and test files
         lcov --remove coverage/coverage.info \
           '/usr/*' \
-          '*/build/_deps/*' \
+          '*/_deps/*' \
           '*/extern/*' \
           '*/tests/*' \
           --output-file coverage/coverage_filtered.info

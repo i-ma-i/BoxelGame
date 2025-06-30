@@ -84,5 +84,5 @@
 - ✅ 依存関係管理 (GLFW, spdlog, GLM, doctest, GLAD)
 - ✅ 静的解析・フォーマット設定 (clang-tidy/clang-format)
 - ✅ テストフレームワーク統合 (doctest 10件のテストケース)
-- ✅ カバレッジ測定システム
+- ✅ カバレッジ測定システム (総合: 56.2%, HTMLレポート: coverage/html/)
 - ✅ 自動リリース・パッケージング
