@@ -1,0 +1,237 @@
+# BoxelGame 技術仕様書
+
+## 1. 概要
+
+BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセルサンドボックスゲームです。
+単一開発者による技術デモとして、操作可能なプレイヤー、有限のVoxelワールド、ブロックの配置と破壊、および最小限の PvE（ゾンビ、スパイダー、スケルトン）を実装します。
+
+### 実装状況
+
+- ✅ **基盤システム**: Application、Window、例外処理階層
+- ✅ **ビルドシステム**: CMake + プリセット (default, release, windows-debug, windows-release, coverage)
+- ✅ **CI/CDパイプライン**: GitHub Actions マルチプラットフォーム + カバレッジ測定
+- ✅ **開発環境**: clang-tidy/clang-format 設定完了
+- ✅ **テストフレームワーク**: doctest 統合済み（10件のテストケース）
+- ✅ **依存関係管理**: GLFW、spdlog、GLM、doctest、GLAD統合済み
+
+---
+
+## 2. 技術要求
+
+### 2.1 パフォーマンス要求
+- **フレームレート**: 30 FPS以上 (GTX 760 + i5-4690)
+- **メモリ使用量**: 4 GB以内 (8 GB環境)
+- **解像度**: 1920×1080
+- **ロード時間**: ワールド初期化 ≤ 5秒
+
+### 2.2 対応プラットフォーム
+- Windows 10/11 (x64)
+- macOS 10.15+ (x64/ARM64)
+- Ubuntu 20.04+ (x64)
+
+---
+
+## 3. 技術スタック
+
+| カテゴリ | ライブラリ | バージョン | 状況 |
+|---------|-----------|-----------|------|
+| 言語 | C++ | 23 | ✅ |
+| ビルド | CMake | 3.19+ | ✅ |
+| パッケージ管理 | CPM.cmake | 0.40.2 | ✅ |
+| ウィンドウ/入力 | GLFW | 3.4.0 | ✅ |
+| OpenGL ローダ | GLAD | 2.0.x | ✅ |
+| グラフィックス | OpenGL | 2.1+ | ✅ |
+| 数学 | GLM | 1.0.1 | ✅ |
+| ログ | spdlog | 1.15.3 | ✅ |
+| テスト | doctest | 2.4.12 | ✅ |
+| ECS | EnTT | 3.15.0 | ⏳ |
+| 物理 | Bullet Physics | 3.25 | ⏳ |
+| UI | Dear ImGui | 1.92.0 | ⏳ |
+| オーディオ | OpenAL Soft | 1.24.3 | ⏳ |
+| DB | SQLite | 3.50.2 | ⏳ |
+| 画像 | stb_image | master | ⏳ |
+
+---
+
+## 4. アーキテクチャ設計
+
+### 4.1 システム構成
+
+```
+┌─────────────────────────────────────────────────┐
+│               Application Layer                  │
+├─────────────────────────────────────────────────┤
+│  Input System  │  Game Logic  │   UI System     │
+├─────────────────────────────────────────────────┤
+│           ECS (EnTT) + Component Systems         │
+├─────────────────────────────────────────────────┤
+│  Physics       │    Voxel     │    Renderer     │
+│  (Bullet)      │    Engine    │    (OpenGL)     │
+├─────────────────────────────────────────────────┤
+│         Platform Layer (GLFW + OpenGL)          │
+└─────────────────────────────────────────────────┘
+```
+
+### 4.2 コア クラス設計
+
+#### Application クラス
+```cpp
+class Application {
+public:
+    Application();
+    ~Application();
+    void Run();
+
+private:
+    std::unique_ptr<Window> m_window;
+    void InitializeLogging();
+    void InitializeWindow();
+    void MainLoop();
+    void Render();
+};
+```
+
+#### Window クラス
+```cpp
+class Window {
+public:
+    Window(int width = 1920, int height = 1080, const std::string& title = "BoxelGame");
+    ~Window();
+    
+    bool ShouldClose() const;
+    void SwapBuffers();
+    void PollEvents();
+    void GetFramebufferSize(int& width, int& height) const;
+
+private:
+    GLFWwindow* m_window;
+    int m_width, m_height;
+    std::string m_title;
+};
+```
+
+#### 例外階層
+```cpp
+class BoxelGameException : public std::runtime_error;
+class InitializationException : public BoxelGameException;
+class ResourceException : public BoxelGameException;
+class WindowException : public BoxelGameException;
+```
+
+---
+
+## 5. 機能仕様
+
+### 5.1 MVP機能
+- **プレイヤー操作**: WASD移動、マウス視点操作、Space ジャンプ
+- **ブロック操作**: 左クリック破壊、右クリック配置
+- **ワールド**: 有限サイズ 256×256×256 blocks
+- **地形生成**: 3D Perlin/Simplex ノイズ
+- **モブ**: ゾンビ、スパイダー、スケルトン（基本AI）
+- **セーブ**: SQLite による自動保存（5分間隔）
+
+### 5.2 ゲームモード
+- **クリエイティブモード**: 無限リソース、飛行可能、無敵
+- **サバイバルモード**: リソース制限、重力、ヘルス/空腹度システム
+
+---
+
+## 6. レンダリング仕様
+
+### 6.1 チャンクシステム
+- **チャンクサイズ**: 16×16×16 blocks
+- **メッシュ生成**: Greedy Meshing アルゴリズム
+- **カリング**: Face Culling（隠れ面削除）
+- **LOD**: 距離に基づくLevel of Detail
+
+### 6.2 シェーダー仕様
+- **頂点シェーダー**: MVP変換、頂点ライティング
+- **フラグメントシェーダー**: テクスチャサンプリング、基本ライティング
+- **プログラム管理**: シェーダーコンパイル、リンク、エラーハンドリング
+
+---
+
+## 7. 物理システム仕様
+
+### 7.1 Bullet Physics 統合
+- **剛体物理**: プレイヤー、ブロック、モブの物理演算
+- **衝突検出**: AABB、レイキャスト
+- **重力システム**: 9.8 m/s² 相当の落下
+- **摩擦**: 地面との摩擦係数
+
+---
+
+## 8. 入力システム仕様
+
+### 8.1 キーボード入力
+- **移動**: W(前進), A(左), S(後退), D(右)
+- **アクション**: Space(ジャンプ), Shift(ダッシュ), Ctrl(しゃがみ)
+- **UI**: Esc(メニュー), Tab(インベントリ)
+
+### 8.2 マウス入力
+- **視点操作**: マウス移動による視点回転
+- **ブロック操作**: 左クリック(破壊), 右クリック(配置)
+- **UI操作**: メニュー、インベントリ操作
+
+---
+
+## 9. データ管理仕様
+
+### 9.1 セーブデータ構造（SQLite）
+```sql
+-- ワールドデータ
+CREATE TABLE world_data (
+    x INTEGER,
+    y INTEGER, 
+    z INTEGER,
+    block_type INTEGER,
+    PRIMARY KEY (x, y, z)
+);
+
+-- プレイヤーデータ
+CREATE TABLE player_data (
+    id INTEGER PRIMARY KEY,
+    pos_x REAL,
+    pos_y REAL,
+    pos_z REAL,
+    health INTEGER,
+    hunger INTEGER
+);
+```
+
+### 9.2 アセット管理
+- **テクスチャ**: PNG形式、stb_image によるロード
+- **シェーダー**: GLSL ファイル、実行時コンパイル
+- **設定**: JSON 形式での設定ファイル
+
+---
+
+## 10. 品質基準
+
+### 10.1 コード品質
+- **テストカバレッジ**: 80%以上
+- **静的解析**: clang-tidy 警告ゼロ
+- **フォーマット**: clang-format 準拠
+- **文書化**: 主要クラス・関数にDoxygen コメント
+
+### 10.2 CI/CD 基準
+- **ビルド**: 全プラットフォームで成功
+- **テスト**: 全テストケース通過
+- **デプロイ**: 自動リリースアーティファクト生成
+
+---
+
+## 11. 開発制約・方針
+
+### 11.1 技術制約
+- OpenGL 2.1 以上（WSL互換性のため）
+- C++23 標準準拠
+- RAII原則の厳格な適用
+- 例外安全性の保証
+
+### 11.2 対象外項目
+- オンラインマルチプレイヤー
+- レッドストーン風ロジック
+- 高度なクラフトシステム
+- 流体シミュレーション
+- MODサポート
