@@ -20,7 +20,7 @@ target_link_libraries(BoxelGameLib PUBLIC
     spdlog::spdlog
     glm::glm
     glfw
-    glad
+    glad::glad
 )
 
 # コンパイラ固有の設定

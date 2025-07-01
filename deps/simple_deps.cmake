@@ -2,33 +2,28 @@
 
 message(STATUS "シンプルな依存関係設定を開始")
 
-# GLAD - OpenGL関数ローダー（安定版v0.1.36使用）
-CPMAddPackage(
-    NAME glad
-    GITHUB_REPOSITORY Dav1dde/glad
-    GIT_TAG v0.1.36
-    OPTIONS
-        "GLAD_PROFILE core"
-        "GLAD_API gl=4.6"
-        "GLAD_GENERATOR c"
-        "GLAD_SPEC gl"
-        "GLAD_NO_LOADER OFF"
-        "GLAD_REPRODUCIBLE ON"
+# GLAD - OpenGL関数ローダー（ソースから作成）
+add_library(glad STATIC 
+    glad/src/gl.c
 )
 
-# GLADが正常に追加された場合の設定
-if(glad_ADDED)
-    # プラットフォーム別のOpenGLライブラリリンク
-    if(WIN32)
-        target_link_libraries(glad PUBLIC opengl32)
-    elseif(UNIX)
-        find_package(OpenGL REQUIRED)
-        target_link_libraries(glad PUBLIC OpenGL::GL)
-    endif()
-    
-    # 警告を抑制
-    target_compile_options(glad PRIVATE -w)
+target_include_directories(glad PUBLIC 
+    glad/include
+)
+
+# エイリアス作成
+add_library(glad::glad ALIAS glad)
+
+# プラットフォーム別のOpenGLライブラリリンク
+if(WIN32)
+    target_link_libraries(glad PUBLIC opengl32)
+elseif(UNIX)
+    find_package(OpenGL REQUIRED)
+    target_link_libraries(glad PUBLIC OpenGL::GL)
 endif()
+
+# 警告を抑制
+target_compile_options(glad PRIVATE -w)
 
 # GLFW - プラットフォーム別設定
 if(WIN32)

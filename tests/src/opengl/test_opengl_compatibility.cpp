@@ -4,7 +4,7 @@
 #include <string>
 
 // OpenGL関連のインクルード
-#include <glad/glad.h>       // GLADを先に読み込み
+#include <glad/gl.h>       // GLADを先に読み込み
 #define GLFW_INCLUDE_NONE // GLFWにOpenGLヘッダーを含めさせない
 #include <GLFW/glfw3.h> // GLFWはGLADの後
 
@@ -66,7 +66,7 @@ private:
             glfwMakeContextCurrent(window);
             
             // GLADでOpenGL関数をロード
-            if (!gladLoadGL()) {
+            if (!gladLoadGL(glfwGetProcAddress)) {
                 result.error_message = "OpenGL関数ロード失敗";
                 glfwDestroyWindow(window);
                 return false;

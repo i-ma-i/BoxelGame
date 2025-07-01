@@ -1,5 +1,5 @@
 #include "core/Window.hpp"
-#include <glad/glad.h>       // GLADを先に読み込み
+#include <glad/gl.h>       // GLADを先に読み込み
 #define GLFW_INCLUDE_NONE // GLFWにOpenGLヘッダーを含めさせない
 #include <GLFW/glfw3.h> // GLFWはGLADの後
 #include <spdlog/spdlog.h>
@@ -127,7 +127,7 @@ void Window::InitializeOpenGL() {
     }
     
     // GLAD初期化（詳細エラー情報付き）
-    if (!gladLoadGL()) {
+    if (!gladLoadGL(glfwGetProcAddress)) {
         // エラー詳細を取得
         spdlog::error("GLAD初期化失敗の詳細:");
         spdlog::error("  - GLコンテキスト: {}", glfwGetCurrentContext() ? "有効" : "無効");
