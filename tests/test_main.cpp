@@ -56,7 +56,7 @@ TEST_CASE("5. ログシステムテスト") {
 TEST_CASE("6. 例外キャッチテスト") {
     try {
         throw BoxelGame::InitializationException("Test", "Error");
-    } catch(const BoxelGame::BoxelGameException& e) {
+    } catch(const BoxelGame::BoxelGameException&) {
         CHECK(true);
     } catch(...) {
         CHECK(false);
@@ -95,12 +95,10 @@ TEST_CASE("7. MockWindow論理テスト") {
 }
 
 TEST_CASE("8. MockWindowメモリ管理テスト") {
-    CHECK_NOTHROW({
-        auto mock_window = std::make_unique<BoxelGame::MockWindow>(640, 480, "Memory Test");
-        mock_window->SwapBuffers();
-        CHECK(mock_window->GetSwapBuffersCallCount() == 1);
-        mock_window.reset();
-    });
+    auto mock_window = std::make_unique<BoxelGame::MockWindow>(640, 480, "Memory Test");
+    CHECK_NOTHROW(mock_window->SwapBuffers());
+    CHECK(mock_window->GetSwapBuffersCallCount() == 1);
+    CHECK_NOTHROW(mock_window.reset());
 }
 
 // =============================================================================
@@ -120,15 +118,14 @@ TEST_CASE("10. Window統合テスト") {
     if (isCI()) {
         return;
     }
-    CHECK_NOTHROW({
-        BoxelGame::Window window(800, 600, "Integration Test");
-        CHECK(window.GetWidth() == 800);
-        CHECK(window.GetHeight() == 600);
-        CHECK(window.GetTitle() == "Integration Test");
-        
-        int width, height;
-        window.GetFramebufferSize(width, height);
-        CHECK(width > 0);
-        CHECK(height > 0);
-    });
+    
+    BoxelGame::Window window(800, 600, "Integration Test");
+    CHECK(window.GetWidth() == 800);
+    CHECK(window.GetHeight() == 600);
+    CHECK(window.GetTitle() == "Integration Test");
+    
+    int width, height;
+    window.GetFramebufferSize(width, height);
+    CHECK(width > 0);
+    CHECK(height > 0);
 }

@@ -1,13 +1,3 @@
-// Windows.hのマクロ競合を回避
-#ifdef WIN32
-    #ifndef NOMINMAX
-        #define NOMINMAX
-    #endif
-    #ifndef WIN32_LEAN_AND_MEAN
-        #define WIN32_LEAN_AND_MEAN
-    #endif
-#endif
-
 #include "core/Window.hpp"
 #include <glad.h>       // GLADを先に読み込み
 #define GLFW_INCLUDE_NONE // GLFWにOpenGLヘッダーを含めさせない

@@ -17,6 +17,15 @@ target_link_libraries(BoxelGameTests PRIVATE
     doctest::doctest
 )
 
+# Windows特有の設定
+if(WIN32)
+    target_compile_definitions(BoxelGameTests PRIVATE
+        _CRT_SECURE_NO_WARNINGS    # getenv等の警告を抑制
+        NOMINMAX                   # min/maxマクロ競合回避
+        WIN32_LEAN_AND_MEAN       # 不要なWindows API削減
+    )
+endif()
+
 # テストディレクトリをインクルード
 target_include_directories(BoxelGameTests PRIVATE
     ${CMAKE_SOURCE_DIR}/include

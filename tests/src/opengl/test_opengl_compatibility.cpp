@@ -211,10 +211,10 @@ TEST_CASE("OpenGL互換性テスト - WSL環境での対応状況確認") {
     
     SUBCASE("OpenGL 3.3 Core Profile テスト") {
         TestResult result(OpenGLVersion(3, 3, GLFW_OPENGL_CORE_PROFILE, "OpenGL 3.3 Core Profile"));
-        OpenGLCompatibilityTester tester;
+        OpenGLCompatibilityTester core_tester;
         
         // 個別テスト実行のためのプライベートメソッドアクセス用
-        auto results = tester.RunCompatibilityTests();
+        auto results = core_tester.RunCompatibilityTests();
         
         bool found_33_core = false;
         for (const auto& res : results) {

@@ -41,7 +41,11 @@ private:
         char buffer[128];
         
         try {
+#ifdef WIN32
+            FILE* pipe = _popen(command.c_str(), "r");
+#else
             FILE* pipe = popen(command.c_str(), "r");
+#endif
             if (!pipe) {
                 return "";
             }
@@ -50,7 +54,11 @@ private:
                 result += buffer;
             }
             
+#ifdef WIN32
+            _pclose(pipe);
+#else
             pclose(pipe);
+#endif
         } catch (...) {
             return "";
         }
