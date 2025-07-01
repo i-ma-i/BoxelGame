@@ -48,13 +48,15 @@ jobs:
       run: |
         cmake --preset ${{ matrix.preset }}
 
-    - name: Build
+    - name: Build (Linux)
+      if: runner.os == 'Linux'
       run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          cmake --build build/${{ matrix.preset }}
-        else
-          cmake --build build/${{ matrix.preset }} --config ${{ matrix.build_type }}
-        fi
+        cmake --build build/${{ matrix.preset }}
+
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cmake --build build/${{ matrix.preset }} --config ${{ matrix.build_type }}
 
     - name: Run tests (Linux)
       if: runner.os == 'Linux'
