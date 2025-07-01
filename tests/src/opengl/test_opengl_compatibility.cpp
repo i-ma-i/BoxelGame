@@ -4,7 +4,7 @@
 #include <string>
 
 // OpenGL関連のインクルード
-#include <glad.h>       // GLADを先に読み込み
+#include <glad/glad.h>       // GLADを先に読み込み
 #define GLFW_INCLUDE_NONE // GLFWにOpenGLヘッダーを含めさせない
 #include <GLFW/glfw3.h> // GLFWはGLADの後
 

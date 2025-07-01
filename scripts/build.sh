@@ -43,7 +43,7 @@ fi
 show_cmake_version
 
 # ビルドディレクトリクリーンアップ（オプション）
-if [ "$2" = "--clean" ] || [ "$2" = "-c" ]; then
+if [ "$1" = "--clean" ] || [ "$1" = "-c" ]; then
     log_step "ビルドディレクトリをクリーンアップ中..."
     rm -rf build
     log_info "クリーンアップ完了"

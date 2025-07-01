@@ -1,7 +1,7 @@
 #include "core/Application.hpp"
 #include "core/Window.hpp"
 #include <spdlog/spdlog.h>
-#include <glad.h>
+#include <glad/glad.h>
 
 namespace BoxelGame {
 
