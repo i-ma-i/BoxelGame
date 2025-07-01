@@ -71,10 +71,10 @@ void Window::InitializeGLFW() {
         throw WindowException("GLFWの初期化に失敗");
     }
     
-    // OpenGL設定
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    // OpenGL 4.1 Core Profile設定（WSL互換性のため）
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     spdlog::info("GLFW初期化完了");
     
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);

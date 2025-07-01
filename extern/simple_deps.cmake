@@ -12,8 +12,8 @@ CPMAddPackage(
         "GLFW_BUILD_EXAMPLES OFF"
         "GLFW_BUILD_TESTS OFF"
         "GLFW_INSTALL OFF"
-        "GLFW_BUILD_WAYLAND OFF"
-        "GLFW_BUILD_X11 ON"
+        "GLFW_BUILD_WAYLAND ON"
+        "GLFW_BUILD_X11 OFF"
 )
 
 # spdlog - ログライブラリ

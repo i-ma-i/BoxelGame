@@ -8,10 +8,10 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 ### 実装状況
 
 - ✅ **基盤システム**: Application、Window、例外処理階層
-- ✅ **ビルドシステム**: CMake + プリセット (default, release, windows-debug, windows-release, coverage)
+- ✅ **ビルドシステム**: CMake + プリセット (linux-debug, linux-release, windows-debug, windows-release, test, coverage)
 - ✅ **CI/CDパイプライン**: GitHub Actions マルチプラットフォーム + カバレッジ測定
 - ✅ **開発環境**: clang-tidy/clang-format 設定完了
-- ✅ **テストフレームワーク**: doctest 統合済み（10件のテストケース）
+- ✅ **テストフレームワーク**: doctest 統合済み（10件のテストケース、階層化済み）
 - ✅ **依存関係管理**: GLFW、spdlog、GLM、doctest、GLAD統合済み
 
 ---
@@ -26,96 +26,49 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 
 ### 2.2 対応プラットフォーム
 - Windows 10/11 (x64)
-- macOS 10.15+ (x64/ARM64)
-- Ubuntu 20.04+ (x64)
+- Ubuntu 20.04+ (x64) with Wayland support
 
 ---
 
 ## 3. 技術スタック
 
-| カテゴリ | ライブラリ | バージョン | 状況 |
-|---------|-----------|-----------|------|
-| 言語 | C++ | 23 | ✅ |
-| ビルド | CMake | 3.19+ | ✅ |
-| パッケージ管理 | CPM.cmake | 0.40.2 | ✅ |
-| ウィンドウ/入力 | GLFW | 3.4.0 | ✅ |
-| OpenGL ローダ | GLAD | 2.0.x | ✅ |
-| グラフィックス | OpenGL | 2.1+ | ✅ |
-| 数学 | GLM | 1.0.1 | ✅ |
-| ログ | spdlog | 1.15.3 | ✅ |
-| テスト | doctest | 2.4.12 | ✅ |
-| ECS | EnTT | 3.15.0 | ⏳ |
-| 物理 | Bullet Physics | 3.25 | ⏳ |
-| UI | Dear ImGui | 1.92.0 | ⏳ |
-| オーディオ | OpenAL Soft | 1.24.3 | ⏳ |
-| DB | SQLite | 3.50.2 | ⏳ |
-| 画像 | stb_image | master | ⏳ |
+| カテゴリ | ライブラリ | バージョン |
+|---------|-----------|-----------|
+| 言語 | C++ | 23 |
+| ビルド | CMake | 3.19+ |
+| パッケージ管理 | CPM.cmake | 0.40.2 |
+| ウィンドウ/入力 | GLFW | 3.4.0 |
+| OpenGL ローダ | GLAD | 2.0.x |
+| グラフィックス | OpenGL | 4.6 Core Profile |
+| 数学 | GLM | 1.0.1 |
+| ログ | spdlog | 1.15.3 |
+| テスト | doctest | 2.4.12 |
+| ECS | EnTT | 3.15.0 |
+| 物理 | Bullet Physics | 3.25 |
+| UI | Dear ImGui | 1.92.0 |
+| オーディオ | OpenAL Soft | 1.24.3 |
+| DB | SQLite | 3.50.2 |
+| 画像 | stb_image | master |
 
 ---
 
 ## 4. アーキテクチャ設計
 
-### 4.1 システム構成
+### システム構成
 
 ```
 ┌─────────────────────────────────────────────────┐
-│               Application Layer                  │
+│               Application Layer                 │
 ├─────────────────────────────────────────────────┤
 │  Input System  │  Game Logic  │   UI System     │
 ├─────────────────────────────────────────────────┤
-│           ECS (EnTT) + Component Systems         │
+│           ECS (EnTT) + Component Systems        │
 ├─────────────────────────────────────────────────┤
 │  Physics       │    Voxel     │    Renderer     │
 │  (Bullet)      │    Engine    │    (OpenGL)     │
 ├─────────────────────────────────────────────────┤
 │         Platform Layer (GLFW + OpenGL)          │
 └─────────────────────────────────────────────────┘
-```
-
-### 4.2 コア クラス設計
-
-#### Application クラス
-```cpp
-class Application {
-public:
-    Application();
-    ~Application();
-    void Run();
-
-private:
-    std::unique_ptr<Window> m_window;
-    void InitializeLogging();
-    void InitializeWindow();
-    void MainLoop();
-    void Render();
-};
-```
-
-#### Window クラス
-```cpp
-class Window {
-public:
-    Window(int width = 1920, int height = 1080, const std::string& title = "BoxelGame");
-    ~Window();
-    
-    bool ShouldClose() const;
-    void SwapBuffers();
-    void PollEvents();
-    void GetFramebufferSize(int& width, int& height) const;
-
-private:
-    GLFWwindow* m_window;
-    int m_width, m_height;
-    std::string m_title;
-};
-```
-
-#### 例外階層
-```cpp
-class BoxelGameException : public std::runtime_error;
-class InitializationException : public BoxelGameException;
-class ResourceException : public BoxelGameException;
-class WindowException : public BoxelGameException;
 ```
 
 ---
@@ -224,7 +177,8 @@ CREATE TABLE player_data (
 ## 11. 開発制約・方針
 
 ### 11.1 技術制約
-- OpenGL 2.1 以上（WSL互換性のため）
+- OpenGL 4.6 Core Profile
+- Wayland ウィンドウシステム対応
 - C++23 標準準拠
 - RAII原則の厳格な適用
 - 例外安全性の保証

@@ -13,15 +13,15 @@ jobs:
         include:
           # Ubuntu builds
           - os: ubuntu-latest
-            preset: default
+            preset: linux-debug
             build_type: Debug
             compiler: gcc
           - os: ubuntu-latest
-            preset: release
+            preset: linux-release
             build_type: Release
             compiler: gcc
           - os: ubuntu-latest
-            preset: default
+            preset: linux-debug
             build_type: Debug
             compiler: clang
             
@@ -34,16 +34,6 @@ jobs:
             preset: windows-release
             build_type: Release
             compiler: msvc
-            
-          # macOS builds
-          - os: macos-latest
-            preset: default
-            build_type: Debug
-            compiler: clang
-          - os: macos-latest
-            preset: release
-            build_type: Release
-            compiler: clang
 
     runs-on: ${{ matrix.os }}
     
@@ -62,20 +52,20 @@ jobs:
           cmake \
           ninja-build \
           pkg-config \
+          libegl1-mesa-dev \
           libgl1-mesa-dev \
           libglu1-mesa-dev \
+          libgles2-mesa-dev \
           libx11-dev \
           libxrandr-dev \
           libxinerama-dev \
           libxcursor-dev \
           libxi-dev \
           libxxf86vm-dev \
+          libwayland-dev \
+          libxkbcommon-dev \
+          wayland-protocols \
           xvfb
-
-    - name: Install dependencies (macOS)
-      if: runner.os == 'macOS'
-      run: |
-        brew install cmake ninja pkg-config
 
     - name: Setup MSVC (Windows)
       if: runner.os == 'Windows'
@@ -109,8 +99,8 @@ jobs:
         xvfb-run -a cmake --build build/${{ matrix.preset }} --target BoxelGameTests
         xvfb-run -a ./build/${{ matrix.preset }}/tests/BoxelGameTests
 
-    - name: Run tests (Windows/macOS)
-      if: runner.os != 'Linux'
+    - name: Run tests (Windows)
+      if: runner.os == 'Windows'
       run: |
         cmake --build build/${{ matrix.preset }} --target BoxelGameTests
         ./build/${{ matrix.preset }}/tests/BoxelGameTests
@@ -193,8 +183,7 @@ jobs:
           
           ### Platforms
           - Windows (Visual Studio 2022)
-          - macOS (Clang)
-          - Linux (GCC/Clang)
+          - Linux (GCC/Clang) with Wayland support
           
           ### Installation
           1. Download the appropriate package for your platform
@@ -221,13 +210,17 @@ jobs:
           cmake \
           ninja-build \
           build-essential \
+          libegl1-mesa-dev \
           libgl1-mesa-dev \
           libglu1-mesa-dev \
+          libgles2-mesa-dev \
           libx11-dev \
           libxrandr-dev \
           libxinerama-dev \
           libxcursor-dev \
-          libxi-dev
+          libxi-dev \
+          libwayland-dev \
+          libxkbcommon-dev
 
     - name: Check code formatting
       run: |
@@ -237,11 +230,11 @@ jobs:
 
     - name: Configure for static analysis
       run: |
-        cmake --preset default
+        cmake --preset linux-debug
         
     - name: Run static analysis
       run: |
         find src include -name "*.cpp" -o -name "*.hpp" | \
-          xargs clang-tidy-15 -p build/default \
+          xargs clang-tidy-15 -p build/linux-debug \
           --config-file=.clang-tidy
       continue-on-error: true

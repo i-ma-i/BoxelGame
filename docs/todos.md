@@ -56,7 +56,9 @@
 - [ ] Doxygen API ドキュメント生成
 
 ### 開発環境改善
-- [ ] README.md 作成 (ビルド手順、使用方法)
+- [x] README.md 作成 (ビルド手順、使用方法)
+- [x] セットアップスクリプト作成 (Ubuntu/Windows)
+- [x] ビルド・テストスクリプト作成
 - [ ] 貢献ガイドライン作成
 - [ ] EditorConfig 設定追加
 
@@ -80,9 +82,12 @@
 
 - ✅ CMake ビルドシステム構築
 - ✅ GitHub Actions CI/CD パイプライン
-- ✅ マルチプラットフォーム対応 (Windows/macOS/Linux)
+- ✅ マルチプラットフォーム対応 (Windows/Linux with Wayland)
 - ✅ 依存関係管理 (GLFW, spdlog, GLM, doctest, GLAD)
 - ✅ 静的解析・フォーマット設定 (clang-tidy/clang-format)
 - ✅ テストフレームワーク統合 (doctest 10件のテストケース, CI環境対応)
 - ✅ カバレッジ測定システム (総合: 56.2%, HTMLレポート: coverage/html/)
 - ✅ 自動リリース・パッケージング
+- ✅ セットアップ・ビルドスクリプト作成 (Ubuntu/Windows対応)
+- ✅ 包括的なREADME.md作成
+- ✅ テスト構造最適化 (階層化、GLOB_RECURSE対応、実行効率72倍改善)

@@ -1,0 +1,2 @@
+This is a placeholder file to ensure the assets directory exists.
+アセットディレクトリが存在することを保証するためのプレースホルダーファイルです。
