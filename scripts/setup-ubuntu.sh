@@ -39,12 +39,16 @@ sudo apt install -y \
     libegl1-mesa-dev \
     libgl1-mesa-dev
 
-# Wayland関連パッケージ
-log_info "Wayland関連パッケージをインストール中..."
+# ウィンドウシステム関連パッケージ
+log_info "ウィンドウシステム関連パッケージをインストール中..."
 sudo apt install -y \
     libwayland-dev \
     libxkbcommon-dev \
-    wayland-protocols
+    wayland-protocols \
+    libxrandr-dev \
+    libxinerama-dev \
+    libxcursor-dev \
+    libxi-dev
 
 # 開発ツール（オプション）
 log_info "開発ツールをインストール中..."

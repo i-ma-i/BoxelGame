@@ -18,9 +18,8 @@ target_include_directories(BoxelGameLib PUBLIC
 # 外部ライブラリをリンク
 target_link_libraries(BoxelGameLib PUBLIC
     spdlog::spdlog
-    glm::glm
-    glfw
     glad::glad
+    glfw
 )
 
 # コンパイラ固有の設定

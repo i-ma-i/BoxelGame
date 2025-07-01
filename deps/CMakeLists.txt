@@ -64,11 +64,11 @@ CPMAddPackage(
 )
 
 # GLM - 数学ライブラリ
-CPMAddPackage(
-    NAME glm
-    GITHUB_REPOSITORY g-truc/glm
-    GIT_TAG 1.0.1
-)
+#CPMAddPackage(
+#    NAME glm
+#    GITHUB_REPOSITORY g-truc/glm
+#    GIT_TAG 1.0.1
+#)
 
 # doctest - テストフレームワーク
 CPMAddPackage(
