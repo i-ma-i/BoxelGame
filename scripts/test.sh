@@ -5,31 +5,11 @@
 
 set -e  # エラーで停止
 
-# 色付きログ出力
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
-
-log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-log_step() {
-    echo -e "${BLUE}[STEP]${NC} $1"
-}
+# 共通関数読み込み
+source "$(dirname "$0")/common.sh"
 
 # プロジェクトルートに移動
-cd "$(dirname "$0")/.."
+move_to_project_root
 
 echo "=========================================="
 echo "BoxelGame テスト実行"
@@ -37,31 +17,22 @@ echo "=========================================="
 
 # ビルドタイプ設定（デフォルト: Debug）
 BUILD_TYPE=${1:-Debug}
-PRESET=""
 
-# プラットフォーム検出
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    log_info "プラットフォーム: Linux"
-    if [ "$BUILD_TYPE" = "Release" ]; then
-        PRESET="linux-release"
-        TEST_EXECUTABLE="build/$PRESET/tests/BoxelGameTests"
-    else
-        PRESET="linux-debug"
-        TEST_EXECUTABLE="build/$PRESET/tests/BoxelGameTests"
-    fi
-elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
-    log_info "プラットフォーム: Windows"
-    if [ "$BUILD_TYPE" = "Release" ]; then
-        PRESET="windows-release"
-    else
-        PRESET="windows-debug"
-    fi
-    TEST_EXECUTABLE="build/$PRESET/tests/$BUILD_TYPE/BoxelGameTests.exe"
-else
+# プラットフォーム検出とプリセット設定
+PLATFORM=$(detect_platform)
+if [ "$PLATFORM" = "unknown" ]; then
     log_error "サポートされていないプラットフォーム: $OSTYPE"
     exit 1
 fi
 
+PRESET=$(get_preset_name "$PLATFORM" "$BUILD_TYPE")
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+TEST_EXECUTABLE=$(get_executable_path "$PLATFORM" "$PRESET" "$BUILD_TYPE" "BoxelGameTests" "true")
+
+log_info "プラットフォーム: $PLATFORM"
 log_info "ビルドタイプ: $BUILD_TYPE"
 log_info "テスト実行ファイル: $TEST_EXECUTABLE"
 
@@ -74,7 +45,7 @@ if [ ! -f "$TEST_EXECUTABLE" ]; then
 fi
 
 # Linux環境でのグラフィックス確認
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [ "$PLATFORM" = "linux" ]; then
     log_step "グラフィックス環境を確認中..."
     
     if [ -n "$DISPLAY" ]; then
@@ -106,7 +77,7 @@ fi
 log_step "テストを実行中..."
 echo ""
 
-if [[ "$OSTYPE" == "linux-gnu"* ]] && [ -n "$XVFB_PREFIX" ]; then
+if [ "$PLATFORM" = "linux" ] && [ -n "$XVFB_PREFIX" ]; then
     $XVFB_PREFIX "$TEST_EXECUTABLE"
     TEST_RESULT=$?
 else
@@ -129,7 +100,7 @@ else
     # エラーメッセージ
     echo ""
     log_info "トラブルシューティング:"
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if [ "$PLATFORM" = "linux" ]; then
         echo "1. 依存関係確認:"
         echo "   ./scripts/setup-ubuntu.sh"
         echo ""

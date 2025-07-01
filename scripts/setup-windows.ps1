@@ -1,5 +1,4 @@
 # BoxelGame - Windows セットアップスクリプト
-# このスクリプトは必要な開発ツールの確認とインストールガイドを提供します
 
 # 管理者権限確認
 if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -13,25 +12,11 @@ Write-Host "=========================================" -ForegroundColor Green
 Write-Host "BoxelGame Windows セットアップ" -ForegroundColor Green
 Write-Host "=========================================" -ForegroundColor Green
 
-# 必要ツールの確認
+# 必要ツール確認
 $tools = @{
-    "Git" = @{
-        Command = "git"
-        Version = "git --version"
-        InstallUrl = "https://git-scm.com/download/win"
-    }
-    "CMake" = @{
-        Command = "cmake"
-        Version = "cmake --version"
-        InstallUrl = "https://cmake.org/download/"
-        MinVersion = "3.19"
-    }
-    "Visual Studio Build Tools" = @{
-        Command = "cl"
-        Version = "cl"
-        InstallUrl = "https://visualstudio.microsoft.com/ja/vs/older-downloads/"
-        Note = "Visual Studio 2022 Community または Build Tools が必要"
-    }
+    "Git" = @{ Command = "git"; Version = "git --version"; InstallUrl = "https://git-scm.com/download/win" }
+    "CMake" = @{ Command = "cmake"; Version = "cmake --version"; InstallUrl = "https://cmake.org/download/" }
+    "Visual Studio" = @{ Command = "cl"; InstallUrl = "https://visualstudio.microsoft.com/ja/vs/" }
 }
 
 $missing_tools = @()
@@ -84,18 +69,8 @@ if ($missing_tools.Count -gt 0) {
         }
     }
     
-    Write-Host "`n特に重要: Visual Studio 2022 のインストール" -ForegroundColor Yellow
-    Write-Host "1. https://visualstudio.microsoft.com/ja/vs/ にアクセス" -ForegroundColor White
-    Write-Host "2. Community版（無料）をダウンロード" -ForegroundColor White
-    Write-Host "3. インストール時に以下のワークロードを選択:" -ForegroundColor White
-    Write-Host "   - C++ によるデスクトップ開発" -ForegroundColor White
-    Write-Host "   - Windows 10/11 SDK" -ForegroundColor White
-    
-    Write-Host "`nChocolatey での一括インストール（推奨）:" -ForegroundColor Green
-    Write-Host "1. 管理者PowerShellでChocolateyをインストール:" -ForegroundColor White
-    Write-Host "   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" -ForegroundColor Gray
-    Write-Host "2. 必要ツールをインストール:" -ForegroundColor White
-    Write-Host "   choco install git cmake visualstudio2022community --package-parameters `"--add Microsoft.VisualStudio.Workload.NativeDesktop`"" -ForegroundColor Gray
+    Write-Host "`nVisual Studio 2022 Communityをインストール" -ForegroundColor Yellow
+    Write-Host "C++デスクトップ開発ワークロードを選択" -ForegroundColor White
     
 } else {
     Write-Host "`n=========================================" -ForegroundColor Green
@@ -103,21 +78,13 @@ if ($missing_tools.Count -gt 0) {
     Write-Host "=========================================" -ForegroundColor Green
 }
 
-# ビルド手順の表示
+# ビルド手順
 Write-Host "`nビルド手順:" -ForegroundColor Green
-Write-Host "1. Developer Command Prompt for VS 2022 を開く" -ForegroundColor White
-Write-Host "2. プロジェクトディレクトリに移動:" -ForegroundColor White
-Write-Host "   cd `"$(Split-Path -Parent $PSScriptRoot)`"" -ForegroundColor Gray
-Write-Host "3. CMake設定:" -ForegroundColor White
-Write-Host "   cmake --preset windows-debug" -ForegroundColor Gray
-Write-Host "4. ビルド実行:" -ForegroundColor White
-Write-Host "   cmake --build build/windows-debug --config Debug" -ForegroundColor Gray
-Write-Host "5. テスト実行:" -ForegroundColor White
-Write-Host "   .\build\windows-debug\tests\Debug\BoxelGameTests.exe" -ForegroundColor Gray
+Write-Host "1. Developer Command Prompt でプロジェクトディレクトリに移動" -ForegroundColor White
+Write-Host "2. .\scripts\build.sh" -ForegroundColor Gray
+Write-Host "3. .\scripts\test.sh" -ForegroundColor Gray
 
-Write-Host "`n注意事項:" -ForegroundColor Yellow
-Write-Host "- 必ず Developer Command Prompt または PowerShell (開発者) を使用してください" -ForegroundColor White
-Write-Host "- 通常のPowerShellやコマンドプロンプトではビルドが失敗する可能性があります" -ForegroundColor White
+Write-Host "`n注意: Developer Command Prompt で実行してください" -ForegroundColor Yellow
 
 Write-Host "`n=========================================" -ForegroundColor Green
 Write-Host "セットアップ確認完了" -ForegroundColor Green

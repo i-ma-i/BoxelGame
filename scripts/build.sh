@@ -5,31 +5,11 @@
 
 set -e  # エラーで停止
 
-# 色付きログ出力
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
-
-log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-log_step() {
-    echo -e "${BLUE}[STEP]${NC} $1"
-}
+# 共通関数読み込み
+source "$(dirname "$0")/common.sh"
 
 # プロジェクトルートに移動
-cd "$(dirname "$0")/.."
+move_to_project_root
 
 echo "=========================================="
 echo "BoxelGame ビルドスクリプト"
@@ -37,53 +17,30 @@ echo "=========================================="
 
 # ビルドタイプ設定（デフォルト: Debug）
 BUILD_TYPE=${1:-Debug}
-PRESET=""
 
-# プラットフォーム検出
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    log_info "プラットフォーム: Linux"
-    if [ "$BUILD_TYPE" = "Release" ]; then
-        PRESET="linux-release"
-    else
-        PRESET="linux-debug"
-    fi
-elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
-    log_info "プラットフォーム: Windows"
-    if [ "$BUILD_TYPE" = "Release" ]; then
-        PRESET="windows-release"
-    else
-        PRESET="windows-debug"
-    fi
-else
+# プラットフォーム検出とプリセット設定
+PLATFORM=$(detect_platform)
+if [ "$PLATFORM" = "unknown" ]; then
     log_error "サポートされていないプラットフォーム: $OSTYPE"
     exit 1
 fi
 
+PRESET=$(get_preset_name "$PLATFORM" "$BUILD_TYPE")
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+log_info "プラットフォーム: $PLATFORM"
 log_info "ビルドタイプ: $BUILD_TYPE"
 log_info "CMakeプリセット: $PRESET"
 
 # 依存関係確認
 log_step "依存関係を確認中..."
-
-if ! command -v cmake &> /dev/null; then
-    log_error "CMakeが見つかりません。先にセットアップスクリプトを実行してください。"
+if ! check_dependencies "$PLATFORM"; then
     exit 1
 fi
 
-if ! command -v ninja &> /dev/null && [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    log_error "Ninjaが見つかりません。先にセットアップスクリプトを実行してください。"
-    exit 1
-fi
-
-log_info "CMake: $(cmake --version | head -1)"
-
-# PKG_CONFIG環境変数設定（Linux）
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    if [ -z "$PKG_CONFIG_EXECUTABLE" ]; then
-        export PKG_CONFIG_EXECUTABLE=/usr/bin/pkg-config
-        log_info "PKG_CONFIG_EXECUTABLE: $PKG_CONFIG_EXECUTABLE"
-    fi
-fi
+show_cmake_version
 
 # ビルドディレクトリクリーンアップ（オプション）
 if [ "$2" = "--clean" ] || [ "$2" = "-c" ]; then
@@ -105,7 +62,7 @@ log_info "CMake設定完了"
 
 # ビルド実行
 log_step "ビルドを実行中..."
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [ "$PLATFORM" = "linux" ]; then
     # Linuxでは--configオプションは不要（Ninjaジェネレータ）
     cmake --build "build/$PRESET"
 else
@@ -121,13 +78,8 @@ fi
 log_info "ビルド完了"
 
 # 実行ファイル確認
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    EXECUTABLE="build/$PRESET/bin/BoxelGame"
-    TEST_EXECUTABLE="build/$PRESET/tests/BoxelGameTests"
-else
-    EXECUTABLE="build/$PRESET/bin/$BUILD_TYPE/BoxelGame.exe"
-    TEST_EXECUTABLE="build/$PRESET/tests/$BUILD_TYPE/BoxelGameTests.exe"
-fi
+EXECUTABLE=$(get_executable_path "$PLATFORM" "$PRESET" "$BUILD_TYPE" "BoxelGame" "false")
+TEST_EXECUTABLE=$(get_executable_path "$PLATFORM" "$PRESET" "$BUILD_TYPE" "BoxelGameTests" "true")
 
 if [ -f "$EXECUTABLE" ]; then
     log_info "実行ファイル: $EXECUTABLE"
@@ -149,7 +101,7 @@ echo "次のコマンドでテストを実行できます:"
 echo "  ./scripts/test.sh"
 echo ""
 echo "実行ファイルを直接実行:"
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [ "$PLATFORM" = "linux" ]; then
     echo "  ./$EXECUTABLE"
 else
     echo "  $EXECUTABLE"

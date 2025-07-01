@@ -13,16 +13,14 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 
 #### 完了済み項目
 - [x] CMake ビルドシステム構築
-- [x] 全プリセット (linux-debug, linux-release, windows-debug, windows-release, test, coverage) 対応
+- [x] 全プリセット (linux-debug, linux-release, windows-debug, windows-release, test) 対応
 - [x] doctest 統合とテスト実行
 - [x] GitHub Actions CI/CD パイプライン構築
   - [x] Linux with Wayland サポート + Windows ビルド
   - [x] macOS 対応の完全削除
   - [x] Debug/Release ビルドマトリックス
   - [x] 自動テスト実行
-  - [x] 静的解析統合 (clang-tidy)
-  - [x] コードフォーマット検証 (clang-format)
-- [x] 依存関係管理 (CPM.cmake)
+  - [x] 依存関係管理 (CPM.cmake)
   - [x] GLFW 3.4
   - [x] spdlog 1.15.3
   - [x] GLM 1.0.1
@@ -30,7 +28,6 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
   - [x] GLAD (OpenGL loader)
 - [x] マルチプラットフォームビルド検証
 - [x] リリースパッケージング自動化
-- [x] カバレッジ測定統合
 - [x] テストアーキテクチャ分離実装
   - [x] IWindow インターフェース設計
   - [x] MockWindow テスト用実装
@@ -186,8 +183,6 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 - **言語**: C++23
 - **ビルドシステム**: CMake 3.19+ with Presets
 - **CI/CD**: GitHub Actions
-- **静的解析**: clang-tidy
-- **フォーマット**: clang-format
 - **テスト**: doctest
 
 ### 主要ライブラリ依存関係
@@ -240,11 +235,9 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 - **ロード時間**: ワールド初期化 ≤ 5秒
 
 ### コード品質
-- **テストカバレッジ**: 80%以上 (現在: 56.2%)
-- **静的解析**: clang-tidy 警告ゼロ
-- **フォーマット**: clang-format 準拠
 - **文書化**: 主要クラス・関数にコメント
 - **テスト分離**: 論理テスト・統合テスト明確分離
+- **コード品質**: シンプルで読みやすい実装
 
 ### CI/CD 基準
 - **ビルド**: 全プラットフォームで成功

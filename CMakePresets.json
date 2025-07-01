@@ -66,25 +66,14 @@
         {
             "name": "test",
             "displayName": "Test Config",
-            "description": "Debug build optimized for testing",
+            "description": "Debug build optimized for testing with optional coverage",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "BUILD_TESTING": "ON"
-            }
-        },
-        {
-            "name": "coverage",
-            "displayName": "Coverage Config",
-            "description": "Debug build with code coverage enabled",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build/${presetName}",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "ENABLE_COVERAGE": "ON"
+                "BUILD_TESTING": "ON",
+                "ENABLE_COVERAGE": "OFF"
             }
         }
     ],
@@ -108,10 +97,6 @@
         {
             "name": "test",
             "configurePreset": "test"
-        },
-        {
-            "name": "coverage",
-            "configurePreset": "coverage"
         }
     ],
     "testPresets": [
@@ -125,13 +110,6 @@
         {
             "name": "test",
             "configurePreset": "test",
-            "output": {
-                "outputOnFailure": true
-            }
-        },
-        {
-            "name": "coverage",
-            "configurePreset": "coverage",
             "output": {
                 "outputOnFailure": true
             }

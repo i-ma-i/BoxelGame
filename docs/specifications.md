@@ -2,13 +2,13 @@
 
 ## 1. 概要
 
-BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセルサンドボックスゲームです。
-単一開発者による技術デモとして、操作可能なプレイヤー、有限のVoxelワールド、ブロックの配置と破壊、および最小限の PvE（ゾンビ、スパイダー、スケルトン）を実装します。
+このゲームは、C++とModern OpenGLを使用したMinecraft風のボクセルサンドボックスゲームです。
+技術デモとして、操作可能なプレイヤー、有限のVoxelワールド、ブロックの配置と破壊、および最小限の PvE（ゾンビ、スパイダー、スケルトン）を実装します。
 
 ### 実装状況
 
 - ✅ **基盤システム**: Application、Window、例外処理階層
-- ✅ **ビルドシステム**: CMake + プリセット (linux-debug, linux-release, windows-debug, windows-release, test, coverage)
+- ✅ **ビルドシステム**: CMakeプリセット
 - ✅ **CI/CDパイプライン**: GitHub Actions マルチプラットフォーム + カバレッジ測定
 - ✅ **開発環境**: clang-tidy/clang-format 設定完了
 - ✅ **テストフレームワーク**: doctest 統合済み（10件のテストケース、階層化済み）
@@ -25,8 +25,8 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 - **ロード時間**: ワールド初期化 ≤ 5秒
 
 ### 2.2 対応プラットフォーム
-- Windows 10/11 (x64)
-- Ubuntu 20.04+ (x64) with Wayland support
+- Windows 10/11
+- Ubuntu 20.04+
 
 ---
 
@@ -39,7 +39,7 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 | パッケージ管理 | CPM.cmake | 0.40.2 |
 | ウィンドウ/入力 | GLFW | 3.4.0 |
 | OpenGL ローダ | GLAD | 2.0.x |
-| グラフィックス | OpenGL | 4.6 Core Profile |
+| グラフィックス | OpenGL | 4.6/4.1 Core Profile |
 | 数学 | GLM | 1.0.1 |
 | ログ | spdlog | 1.15.3 |
 | テスト | doctest | 2.4.12 |
@@ -62,10 +62,10 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 ├─────────────────────────────────────────────────┤
 │  Input System  │  Game Logic  │   UI System     │
 ├─────────────────────────────────────────────────┤
-│           ECS (EnTT) + Component Systems        │
+│             ECS + Component Systems             │
 ├─────────────────────────────────────────────────┤
 │  Physics       │    Voxel     │    Renderer     │
-│  (Bullet)      │    Engine    │    (OpenGL)     │
+│                │    Engine    │                 │
 ├─────────────────────────────────────────────────┤
 │         Platform Layer (GLFW + OpenGL)          │
 └─────────────────────────────────────────────────┘
@@ -76,8 +76,8 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 ## 5. 機能仕様
 
 ### 5.1 MVP機能
-- **プレイヤー操作**: WASD移動、マウス視点操作、Space ジャンプ
-- **ブロック操作**: 左クリック破壊、右クリック配置
+- **プレイヤー操作**: 移動、ジャンプ、視点操作
+- **ブロック操作**: 配置、破壊
 - **ワールド**: 有限サイズ 256×256×256 blocks
 - **地形生成**: 3D Perlin/Simplex ノイズ
 - **モブ**: ゾンビ、スパイダー、スケルトン（基本AI）
@@ -98,9 +98,8 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 - **LOD**: 距離に基づくLevel of Detail
 
 ### 6.2 シェーダー仕様
-- **頂点シェーダー**: MVP変換、頂点ライティング
+- **頂点シェーダー**: MVP変換
 - **フラグメントシェーダー**: テクスチャサンプリング、基本ライティング
-- **プログラム管理**: シェーダーコンパイル、リンク、エラーハンドリング
 
 ---
 
@@ -123,7 +122,7 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 
 ### 8.2 マウス入力
 - **視点操作**: マウス移動による視点回転
-- **ブロック操作**: 左クリック(破壊), 右クリック(配置)
+- **ブロック操作**: 右クリック(配置)、左クリック(破壊)
 - **UI操作**: メニュー、インベントリ操作
 
 ---
@@ -162,10 +161,8 @@ CREATE TABLE player_data (
 ## 10. 品質基準
 
 ### 10.1 コード品質
-- **テストカバレッジ**: 80%以上
-- **静的解析**: clang-tidy 警告ゼロ
-- **フォーマット**: clang-format 準拠
-- **文書化**: 主要クラス・関数にDoxygen コメント
+- **文書化**: 主要クラス・関数にコメント
+- **コード品質**: シンプルで読みやすい実装
 
 ### 10.2 CI/CD 基準
 - **ビルド**: 全プラットフォームで成功

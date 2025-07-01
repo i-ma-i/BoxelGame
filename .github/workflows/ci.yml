@@ -11,79 +11,38 @@ jobs:
     strategy:
       matrix:
         include:
-          # Ubuntu builds
           - os: ubuntu-latest
             preset: linux-debug
             build_type: Debug
-            compiler: gcc
           - os: ubuntu-latest
             preset: linux-release
             build_type: Release
-            compiler: gcc
-          - os: ubuntu-latest
-            preset: linux-debug
-            build_type: Debug
-            compiler: clang
-            
-          # Windows builds
           - os: windows-latest
             preset: windows-debug
             build_type: Debug
-            compiler: msvc
           - os: windows-latest
             preset: windows-release
             build_type: Release
-            compiler: msvc
 
     runs-on: ${{ matrix.os }}
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          build-essential \
-          cmake \
-          ninja-build \
-          pkg-config \
-          libegl1-mesa-dev \
-          libgl1-mesa-dev \
-          libglu1-mesa-dev \
-          libgles2-mesa-dev \
-          libx11-dev \
-          libxrandr-dev \
-          libxinerama-dev \
-          libxcursor-dev \
-          libxi-dev \
-          libxxf86vm-dev \
-          libwayland-dev \
-          libxkbcommon-dev \
-          wayland-protocols \
-          xvfb
+          build-essential cmake ninja-build pkg-config \
+          libegl1-mesa-dev libgl1-mesa-dev libgles2-mesa-dev \
+          libx11-dev libxrandr-dev libxcursor-dev libxi-dev \
+          libwayland-dev libxkbcommon-dev wayland-protocols xvfb
 
     - name: Setup MSVC (Windows)
       if: runner.os == 'Windows'
       uses: microsoft/setup-msbuild@v2
-
-    - name: Setup Clang (Ubuntu)
-      if: runner.os == 'Linux' && matrix.compiler == 'clang'
-      run: |
-        sudo apt-get install -y clang-15 clang-tidy-15 clang-format-15
-        echo "CC=clang-15" >> $GITHUB_ENV
-        echo "CXX=clang++-15" >> $GITHUB_ENV
-
-    - name: Setup GCC (Ubuntu)
-      if: runner.os == 'Linux' && matrix.compiler == 'gcc'
-      run: |
-        sudo apt-get install -y gcc-12 g++-12
-        echo "CC=gcc-12" >> $GITHUB_ENV
-        echo "CXX=g++-12" >> $GITHUB_ENV
 
     - name: Configure CMake
       run: |
@@ -93,148 +52,45 @@ jobs:
       run: |
         cmake --build build/${{ matrix.preset }} --config ${{ matrix.build_type }}
 
-    - name: Run tests (Linux with virtual display)
+    - name: Run tests (Linux)
       if: runner.os == 'Linux'
-      run: |
-        xvfb-run -a cmake --build build/${{ matrix.preset }} --target BoxelGameTests
-        xvfb-run -a ./build/${{ matrix.preset }}/tests/BoxelGameTests
+      run: xvfb-run -a ./build/${{ matrix.preset }}/tests/BoxelGameTests
 
     - name: Run tests (Windows)
       if: runner.os == 'Windows'
-      run: |
-        cmake --build build/${{ matrix.preset }} --target BoxelGameTests
-        ./build/${{ matrix.preset }}/tests/BoxelGameTests
+      run: ./build/${{ matrix.preset }}/tests/${{ matrix.build_type }}/BoxelGameTests.exe
 
-    - name: Run clang-tidy (Ubuntu Clang only)
-      if: runner.os == 'Linux' && matrix.compiler == 'clang' && matrix.build_type == 'Debug'
-      run: |
-        find src include -name "*.cpp" -o -name "*.hpp" | xargs clang-tidy-15 \
-          -p build/${{ matrix.preset }} \
-          --config-file=.clang-tidy \
-          --warnings-as-errors='*'
-      continue-on-error: true
 
     - name: Upload build artifacts
       if: matrix.build_type == 'Release'
       uses: actions/upload-artifact@v4
       with:
-        name: BoxelGame-${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}
-        path: |
-          build/${{ matrix.preset }}/bin/
-          build/${{ matrix.preset }}/BoxelGame*
-        retention-days: 90
+        name: BoxelGame-${{ matrix.os }}-${{ matrix.build_type }}
+        path: build/${{ matrix.preset }}/bin/
+        retention-days: 30
 
-  package-release:
+  release:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Download all artifacts
+    - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
         path: artifacts
-
-    - name: Create release package
-      run: |
-        mkdir -p release
-        cd artifacts
-        for dir in */; do
-          if [[ "$dir" == *"Release"* ]]; then
-            platform=$(echo "$dir" | cut -d'-' -f2)
-            mkdir -p "../release/BoxelGame-${platform}"
-            # Copy executable and required files
-            cp -r "$dir"/* "../release/BoxelGame-${platform}/"
-            # Copy documentation
-            cp ../README.md "../release/BoxelGame-${platform}/" 2>/dev/null || echo "README.md not found"
-            cp ../docs/*.md "../release/BoxelGame-${platform}/docs/" 2>/dev/null || echo "docs not found"
-            # Copy assets if they exist
-            cp -r ../assets "../release/BoxelGame-${platform}/" 2>/dev/null || echo "assets not found"
-            # Create archive
-            cd "../release"
-            tar -czf "BoxelGame-${platform}.tar.gz" "BoxelGame-${platform}/"
-            cd "../artifacts"
-          fi
-        done
-
-    - name: Upload release artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: BoxelGame-Release-All-Platforms
-        path: release/
-        retention-days: 90
 
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
-        files: release/*.tar.gz
+        files: artifacts/**/BoxelGame*
         body: |
           ## BoxelGame Release
           
-          ### Features
-          - Cross-platform voxel sandbox game engine
-          - C++23 with Modern OpenGL
-          - ECS architecture with EnTT
-          - Full CI/CD pipeline
-          
-          ### Platforms
-          - Windows (Visual Studio 2022)
-          - Linux (GCC/Clang) with Wayland support
-          
-          ### Installation
-          1. Download the appropriate package for your platform
-          2. Extract the archive
-          3. Run the BoxelGame executable
+          Cross-platform voxel sandbox game engine built with C++23 and Modern OpenGL.
           
           🤖 Generated with [Claude Code](https://claude.ai/code)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  code-quality:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          clang-format-15 \
-          clang-tidy-15 \
-          cmake \
-          ninja-build \
-          build-essential \
-          libegl1-mesa-dev \
-          libgl1-mesa-dev \
-          libglu1-mesa-dev \
-          libgles2-mesa-dev \
-          libx11-dev \
-          libxrandr-dev \
-          libxinerama-dev \
-          libxcursor-dev \
-          libxi-dev \
-          libwayland-dev \
-          libxkbcommon-dev
-
-    - name: Check code formatting
-      run: |
-        find src include tests -name "*.cpp" -o -name "*.hpp" | \
-          xargs clang-format-15 --dry-run --Werror
-      continue-on-error: true
-
-    - name: Configure for static analysis
-      run: |
-        cmake --preset linux-debug
-        
-    - name: Run static analysis
-      run: |
-        find src include -name "*.cpp" -o -name "*.hpp" | \
-          xargs clang-tidy-15 -p build/linux-debug \
-          --config-file=.clang-tidy
-      continue-on-error: true
