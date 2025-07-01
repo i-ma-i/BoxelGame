@@ -9,7 +9,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 Write-Host "=========================================" -ForegroundColor Green
-Write-Host "BoxelGame Windows セットアップ" -ForegroundColor Green
+Write-Host "BoxelGame Windows セットアップ"             -ForegroundColor Green
 Write-Host "=========================================" -ForegroundColor Green
 
 # 必要ツール確認

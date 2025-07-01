@@ -44,35 +44,6 @@ if [ ! -f "$TEST_EXECUTABLE" ]; then
     exit 1
 fi
 
-# Linux環境でのグラフィックス確認
-if [ "$PLATFORM" = "linux" ]; then
-    log_step "グラフィックス環境を確認中..."
-    
-    if [ -n "$DISPLAY" ]; then
-        log_info "X11セッション検出: $DISPLAY"
-    elif [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-        log_info "Waylandセッション検出"
-    else
-        log_warn "グラフィックス環境が検出されません"
-        log_warn "統合テストが失敗する可能性があります（論理テストは実行されます）"
-    fi
-    
-    # 仮想ディスプレイ使用オプション
-    USE_XVFB=${2:-"auto"}
-    
-    if [ "$USE_XVFB" = "xvfb" ] || ([ "$USE_XVFB" = "auto" ] && [ -z "$DISPLAY" ] && [ "$XDG_SESSION_TYPE" != "wayland" ]); then
-        if command -v xvfb-run &> /dev/null; then
-            log_info "仮想ディスプレイ（Xvfb）を使用してテストを実行します"
-            XVFB_PREFIX="xvfb-run -a"
-        else
-            log_warn "xvfb-run が見つかりません。統合テストが失敗する可能性があります"
-            XVFB_PREFIX=""
-        fi
-    else
-        XVFB_PREFIX=""
-    fi
-fi
-
 # テスト実行
 log_step "テストを実行中..."
 echo ""
@@ -96,25 +67,6 @@ else
     log_error "=========================================="
     log_error "✗ テストが失敗しました（終了コード: $TEST_RESULT）"
     log_error "=========================================="
-    
-    # エラーメッセージ
-    echo ""
-    log_info "トラブルシューティング:"
-    if [ "$PLATFORM" = "linux" ]; then
-        echo "1. 依存関係確認:"
-        echo "   ./scripts/setup-ubuntu.sh"
-        echo ""
-        echo "2. EGLライブラリ確認:"
-        echo "   sudo apt install libegl1-mesa-dev"
-        echo ""
-        echo "3. 仮想ディスプレイでテスト:"
-        echo "   ./scripts/test.sh Debug xvfb"
-    else
-        echo "1. 依存関係確認:"
-        echo "   ./scripts/setup-windows.ps1"
-        echo ""
-        echo "2. Developer Command Prompt で実行しているか確認"
-    fi
 fi
 
 exit $TEST_RESULT
