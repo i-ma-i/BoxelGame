@@ -1,5 +1,15 @@
 #pragma once
 
+// Windows.hのマクロ競合を回避
+#ifdef WIN32
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+#endif
+
 #include "core/Exception.hpp"
 #include "core/IWindow.hpp"
 #include <string>
@@ -44,7 +54,7 @@ private:
     std::string m_title;
 
     void InitializeGLFW();
-    void CreateWindow();
+    void InitializeWindow();
     void InitializeOpenGL();
     void SetupCallbacks();
 

@@ -2,19 +2,33 @@
 
 message(STATUS "シンプルな依存関係設定を開始")
 
-# GLFW - 最小限の設定
-CPMAddPackage(
-    NAME glfw
-    GITHUB_REPOSITORY glfw/glfw
-    GIT_TAG 3.4
-    OPTIONS
-        "GLFW_BUILD_DOCS OFF"
-        "GLFW_BUILD_EXAMPLES OFF"
-        "GLFW_BUILD_TESTS OFF"
-        "GLFW_INSTALL OFF"
-        "GLFW_BUILD_WAYLAND ON"
-        "GLFW_BUILD_X11 OFF"
-)
+# GLFW - プラットフォーム別設定
+if(WIN32)
+    CPMAddPackage(
+        NAME glfw
+        GITHUB_REPOSITORY glfw/glfw
+        GIT_TAG 3.4
+        OPTIONS
+            "GLFW_BUILD_DOCS OFF"
+            "GLFW_BUILD_EXAMPLES OFF"
+            "GLFW_BUILD_TESTS OFF"
+            "GLFW_INSTALL OFF"
+            "GLFW_BUILD_WIN32 ON"
+    )
+else()
+    CPMAddPackage(
+        NAME glfw
+        GITHUB_REPOSITORY glfw/glfw
+        GIT_TAG 3.4
+        OPTIONS
+            "GLFW_BUILD_DOCS OFF"
+            "GLFW_BUILD_EXAMPLES OFF"
+            "GLFW_BUILD_TESTS OFF"
+            "GLFW_INSTALL OFF"
+            "GLFW_BUILD_WAYLAND ON"
+            "GLFW_BUILD_X11 OFF"
+    )
+endif()
 
 # spdlog - ログライブラリ
 CPMAddPackage(
@@ -57,6 +71,14 @@ CPMAddPackage(
 # シンプルなGLAD設定
 add_library(glad STATIC glad/glad.c)
 target_include_directories(glad PUBLIC glad)
+
+# プラットフォーム別のOpenGLライブラリリンク
+if(WIN32)
+    target_link_libraries(glad PUBLIC opengl32)
+elseif(UNIX)
+    find_package(OpenGL REQUIRED)
+    target_link_libraries(glad PUBLIC OpenGL::GL)
+endif()
 
 # 警告を抑制
 if(glfw_ADDED)

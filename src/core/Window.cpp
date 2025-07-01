@@ -1,3 +1,13 @@
+// Windows.hのマクロ競合を回避
+#ifdef WIN32
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+#endif
+
 #include "core/Window.hpp"
 #include <glad.h>       // GLADを先に読み込み
 #define GLFW_INCLUDE_NONE // GLFWにOpenGLヘッダーを含めさせない
@@ -13,7 +23,7 @@ Window::Window(int width, int height, const std::string& title)
         spdlog::info("ウィンドウ初期化開始: {}x{} \"{}\"", width, height, title);
         
         InitializeGLFW();
-        CreateWindow();
+        InitializeWindow();
         InitializeOpenGL();
         SetupCallbacks();
         
@@ -81,7 +91,7 @@ void Window::InitializeGLFW() {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 }
 
-void Window::CreateWindow() {
+void Window::InitializeWindow() {
     m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
     if (!m_window) {
         throw WindowException("ウィンドウの作成に失敗");
