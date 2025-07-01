@@ -50,15 +50,32 @@ jobs:
 
     - name: Build
       run: |
-        cmake --build build/${{ matrix.preset }} --config ${{ matrix.build_type }}
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          cmake --build build/${{ matrix.preset }}
+        else
+          cmake --build build/${{ matrix.preset }} --config ${{ matrix.build_type }}
+        fi
 
     - name: Run tests (Linux)
       if: runner.os == 'Linux'
-      run: xvfb-run -a ./build/${{ matrix.preset }}/tests/BoxelGameTests
+      run: |
+        if [ -f "./build/${{ matrix.preset }}/tests/BoxelGameTests" ]; then
+          xvfb-run -a ./build/${{ matrix.preset }}/tests/BoxelGameTests
+        else
+          echo "Test executable not found at ./build/${{ matrix.preset }}/tests/BoxelGameTests"
+          exit 1
+        fi
 
     - name: Run tests (Windows)
       if: runner.os == 'Windows'
-      run: ./build/${{ matrix.preset }}/tests/${{ matrix.build_type }}/BoxelGameTests.exe
+      run: |
+        $testPath = "./build/${{ matrix.preset }}/tests/${{ matrix.build_type }}/BoxelGameTests.exe"
+        if (Test-Path $testPath) {
+          & $testPath
+        } else {
+          Write-Host "Test executable not found at $testPath"
+          exit 1
+        }
 
 
     - name: Upload build artifacts
@@ -89,8 +106,6 @@ jobs:
           ## BoxelGame Release
           
           Cross-platform voxel sandbox game engine built with C++23 and Modern OpenGL.
-          
-          🤖 Generated with [Claude Code](https://claude.ai/code)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
