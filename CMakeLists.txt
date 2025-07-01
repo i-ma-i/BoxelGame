@@ -26,7 +26,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo;MinSizeRel" CACHE ST
 
 
 # サブディレクトリを追加
-add_subdirectory(extern)
+add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(tests)
 
