@@ -14,32 +14,32 @@ echo "=========================================="
 
 log_info "OS: $(lsb_release -d | cut -f2)"
 
-# パッケージリストの更新
 log_info "パッケージリストを更新中..."
 sudo apt update
 
-# 必須パッケージのインストール
-log_info "必須パッケージをインストール中..."
+log_info "アプリ開発用パッケージをインストール中..."
 sudo apt install -y \
-    build-essential \
+    git \
     cmake \
-    ninja-build \
     pkg-config \
-    git
+    build-essential \
+    ninja-build
 
-# OpenGL関連パッケージ
-log_info "OpenGL関連パッケージをインストール中..."
-sudo apt install -y \
-    libegl1-mesa-dev \
-    libgl1-mesa-dev \
-    libglu1-mesa-dev
-
-# Wayland関連パッケージ
-log_info "Wayland関連パッケージをインストール中..."
+log_info "ウィンドウシステム用パッケージをインストール中..."
 sudo apt install -y \
     libwayland-dev \
     libxkbcommon-dev \
     wayland-protocols
+
+log_info "グラフィックスAPI用パッケージをインストール中..."
+sudo apt install -y \
+    libgl-dev \
+    libegl-dev \
+    libglfw-dev
+# sudo apt install -y \
+#     libgl1-mesa-dev \
+#     libegl1-mesa-dev \
+#     libglu1-mesa-dev
 
 # X11関連パッケージ（X11環境での動作も保証）
 log_info "X11関連パッケージをインストール中..."
