@@ -10,8 +10,6 @@ source "$(dirname "$0")/common.sh"
 setup_linux() {
     log_info "Linuxの開発環境をセットアップします"
     echo ""
-    log_info "パッケージリストを更新中..."
-    sudo apt update
 
     log_info "アプリ開発用パッケージをインストール中..."
     sudo apt install -y \
