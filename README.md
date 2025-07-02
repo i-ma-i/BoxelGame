@@ -47,16 +47,9 @@ cd BoxelGame
 
 ### 2. 環境のセットアップ
 
-#### Ubuntu/Debian:
+#### 開発環境セットアップ:
 ```bash
-# セットアップスクリプトを実行
-./scripts/setup-ubuntu.sh
-```
-
-#### Windows:
-```powershell
-# セットアップスクリプトを実行（管理者権限）
-.\scripts\setup-windows.ps1
+./scripts/setup-dev-env.sh
 ```
 
 ### 3. ビルドの実行
