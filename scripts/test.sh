@@ -48,13 +48,8 @@ fi
 log_step "テストを実行中..."
 echo ""
 
-if [ "$PLATFORM" = "linux" ] && [ -n "$XVFB_PREFIX" ]; then
-    $XVFB_PREFIX "$TEST_EXECUTABLE"
-    TEST_RESULT=$?
-else
-    "$TEST_EXECUTABLE"
-    TEST_RESULT=$?
-fi
+"$TEST_EXECUTABLE"
+TEST_RESULT=$?
 
 echo ""
 

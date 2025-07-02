@@ -11,7 +11,7 @@
 
 - **Modern C++23**: 最新の C++ 標準を使用
 - **OpenGL 4.6 Core Profile**: 高性能なレンダリング
-- **Wayland & X11 サポート**: Linux の主要ウィンドウシステム対応
+- **Wayland サポート**: Linux の現代的なウィンドウシステム対応
 - **クロスプラットフォーム**: Windows と Linux 対応
 - **CI/CD パイプライン**: GitHub Actions による自動ビルド・テスト
 - **開発ツール**: 最適化されたビルドスクリプト、統合テスト
@@ -76,41 +76,11 @@ cd BoxelGame
 
 ```bash
 # Debug テスト
-./scripts/test.sh
+./scripts/test.sh Debug
 
 # Release テスト
 ./scripts/test.sh Release
-
-# 仮想ディスプレイでテスト（Linux）
-./scripts/test.sh Debug xvfb
 ```
-
-## 依存関係
-
-### 外部ライブラリ（CPM.cmake で自動管理）
-| ライブラリ | バージョン | 用途 |
-|-----------|-----------|------|
-| GLFW | 3.4 | ウィンドウ管理 |
-| spdlog | 1.15.3 | ログ出力 |
-| GLM | 1.0.1 | 数学ライブラリ |
-| doctest | 2.4.12 | テストフレームワーク |
-| GLAD | 2.0.x | OpenGL ローダー |
-
-### システム依存関係
-
-#### Ubuntu/Debian:
-```bash
-sudo apt install \
-  build-essential cmake ninja-build pkg-config \
-  libegl1-mesa-dev libgl1-mesa-dev libgles2-mesa-dev \
-  libwayland-dev libxkbcommon-dev wayland-protocols \
-  libx11-dev libxrandr-dev libxcursor-dev libxi-dev xvfb
-```
-
-#### Windows:
-- Visual Studio 2022 Community（C++ デスクトップ開発ワークロード）
-- CMake 3.19+
-- Git
 
 ## CMake プリセット
 
@@ -132,61 +102,15 @@ cmake --preset windows-release
 
 ```
 BoxelGame/
-├── src/                    # ソースコード
-│   ├── core/              # コアシステム
-│   └── main.cpp           # エントリーポイント
-├── include/               # ヘッダーファイル
-├── tests/                 # テストコード
-│   ├── src/              # テスト実装
-│   └── mocks/            # モックオブジェクト
-├── scripts/               # ビルド・開発スクリプト
-│   ├── common.sh         # 共通関数ライブラリ
-│   ├── build.sh          # ビルドスクリプト
-│   ├── test.sh           # テストスクリプト
-│   ├── setup-ubuntu.sh   # Ubuntu セットアップ
-│   └── setup-windows.ps1 # Windows セットアップ
-├── docs/                  # ドキュメント
-├── assets/                # ゲームアセット
-├── deps/                  # 外部依存関係
-├── cmake/                 # CMake 設定
-└── build/                 # ビルド出力
-```
-
-## トラブルシューティング
-
-### Linux
-
-#### EGL エラー
-```
-GLFW エラー 65542: EGL: Library not found
-```
-**解決法:**
-```bash
-sudo apt install libegl1-mesa-dev libgl1-mesa-dev
-```
-
-#### pkg-config エラー
-```bash
-export PKG_CONFIG_EXECUTABLE=/usr/bin/pkg-config
-```
-
-#### グラフィックス環境なしでテスト実行
-```bash
-# 仮想ディスプレイ使用
-sudo apt install xvfb
-./scripts/test.sh Debug xvfb
-```
-
-### Windows
-
-#### 重要な注意点
-- Developer Command Prompt for VS 2022 で実行
-- Visual Studio 2022 の C++ デスクトップ開発ワークロードが必要
-
-#### CMake が見つからない
-```powershell
-# Chocolatey で CMake をインストール
-choco install cmake
+├── src/         # ソースコード
+├── include/     # ヘッダーファイル
+├── tests/       # テストコード
+├── scripts/     # 開発用スクリプト
+├── docs/        # ドキュメント
+├── assets/      # ゲームアセット
+├── deps/        # 外部依存関係
+├── cmake/       # CMake 設定
+└── build/       # ビルド出力
 ```
 
 ## 開発
@@ -212,14 +136,4 @@ choco install cmake
 - **Linux**: `build/linux-release/bin/BoxelGame`
 - **Windows**: `build/windows-release/bin/Release/BoxelGame.exe`
 
-## ライセンス
-
-MIT License - 詳細は [LICENSE](LICENSE) ファイルを参照してください。
-
-## 貢献
-
-プルリクエストやイシューの報告を歓迎します。詳細は [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
-
 ---
-
-🤖 Generated with [Claude Code](https://claude.ai/code)

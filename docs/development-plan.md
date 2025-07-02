@@ -16,7 +16,7 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
 - [x] 全プリセット (linux-debug, linux-release, windows-debug, windows-release, test) 対応
 - [x] doctest 統合とテスト実行
 - [x] GitHub Actions CI/CD パイプライン構築
-  - [x] Linux with Wayland サポート + Windows ビルド
+  - [x] Linux with Waylandサポート + Windows ビルド
   - [x] macOS 対応の完全削除
   - [x] Debug/Release ビルドマトリックス
   - [x] 自動テスト実行
@@ -34,7 +34,7 @@ BoxelGameは、C++23とModern OpenGLを使用したMinecraft風のボクセル�
   - [x] 論理テスト（CI環境対応）・統合テスト（ローカル専用）分離
   - [x] CI環境依存コードの除去とクリーンアップ
   - [x] OpenGL 4.6 Core Profile にアップグレード
-  - [x] Wayland ウィンドウシステムサポート追加
+  - [x] Wayland ウィンドウシステム対応
 - [x] テスト構造最適化
   - [x] テストディレクトリの階層化 (gpu/, opengl/, system/)
   - [x] CMake GLOB_RECURSE対応によるテストファイル自動収集

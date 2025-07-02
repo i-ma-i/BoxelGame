@@ -33,29 +33,14 @@ sudo apt install -y \
 
 log_info "グラフィックスAPI用パッケージをインストール中..."
 sudo apt install -y \
-    libgl-dev \
-    libegl-dev \
-    libglfw-dev
-# sudo apt install -y \
-#     libgl1-mesa-dev \
-#     libegl1-mesa-dev \
-#     libglu1-mesa-dev
-
-# X11関連パッケージ（X11環境での動作も保証）
-log_info "X11関連パッケージをインストール中..."
-sudo apt install -y \
-    libx11-dev \
-    libxrandr-dev \
-    libxinerama-dev \
-    libxcursor-dev \
-    libxi-dev \
-    libxxf86vm-dev
+    libgl1-mesa-dev \
+    libegl1-mesa-dev \
+    libglu1-mesa-dev
 
 # 開発ツール（オプション）
 log_info "開発ツールをインストール中..."
 sudo apt install -y \
-    xvfb
-
+    gdb
 
 echo ""
 log_info "=========================================="
