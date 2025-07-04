@@ -71,24 +71,32 @@ void Window::InitializeGLFW() {
         throw WindowException("GLFWの初期化に失敗");
     }
     
-    // Windows固有の設定
-#ifdef WIN32
-    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
-    glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_FALSE);
-#endif
-    
     // OpenGL 4.1 Core Profile設定（WSL互換性のため）
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     
-    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    // 統一されたウィンドウ装飾設定
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);         // タイトルバーと装飾を表示
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);         // リサイズ可能
+    glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);        // 最大化状態で開始しない
+    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);           // ウィンドウを表示
+    glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);           // フォーカスを取得
+    glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);     // フォーカス失時の自動最小化を無効
+    glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);     // 表示時にフォーカスを取得
+    
+    // レンダリング設定
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);      // ダブルバッファリング
+    
+    // プラットフォーム固有設定
+#ifdef WIN32
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);  // DPIスケーリング対応
+    glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_FALSE); // Alt+F4等のキーボードメニュー無効
+#endif
     
     spdlog::info("GLFW初期化完了 - OpenGL 4.1 Core Profile");
 }
-
 
 void Window::InitializeWindow() {
     m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
