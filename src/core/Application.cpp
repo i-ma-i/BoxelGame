@@ -45,7 +45,7 @@ void Application::InitializeLogging() {
 void Application::InitializeWindow() {
     try {
         spdlog::info("ウィンドウシステム初期化中...");
-        m_window = std::make_unique<Window>(1920, 1080, "BoxelGame - Voxel Sandbox");
+        m_window = std::make_unique<Window>(1280, 720, "BoxelGame - Voxel Sandbox");
         spdlog::info("ウィンドウシステム初期化完了");
     } catch (const std::exception& e) {
         throw InitializationException("Window", e.what());

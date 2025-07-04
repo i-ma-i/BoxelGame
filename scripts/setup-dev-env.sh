@@ -22,15 +22,23 @@ setup_linux() {
 
     log_info "ウィンドウシステム用パッケージをインストール中..."
     sudo apt install -y \
+        libx11-dev \
+        libxrandr-dev \
+        libxinerama-dev \
+        libxcursor-dev \
+        libxi-dev \
         libwayland-dev \
         libxkbcommon-dev \
-        wayland-protocols
+        wayland-protocols \
+        libdecor-0-dev
 
     log_info "グラフィックスAPI用パッケージをインストール中..."
     sudo apt install -y \
-        libgl1-mesa-dev \
-        libegl1-mesa-dev \
-        libglu1-mesa-dev
+        libegl1-mesa-dev
+    # sudo apt install -y \
+    #     libgl1-mesa-dev \
+    #     libegl1-mesa-dev \
+    #     libglu1-mesa-dev
 }
 
 setup_windows() {
