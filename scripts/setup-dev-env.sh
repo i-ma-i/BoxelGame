@@ -35,10 +35,6 @@ setup_linux() {
     log_info "グラフィックスAPI用パッケージをインストール中..."
     sudo apt install -y \
         libegl1-mesa-dev
-    # sudo apt install -y \
-    #     libgl1-mesa-dev \
-    #     libegl1-mesa-dev \
-    #     libglu1-mesa-dev
 }
 
 setup_windows() {
