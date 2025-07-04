@@ -1,6 +1,4 @@
-# シンプルな依存関係設定（WSL環境対応）
-
-message(STATUS "シンプルな依存関係設定を開始")
+message(STATUS "依存ライブラリのインストール開始")
 
 # GLAD - OpenGL関数ローダー（ソースから作成）
 add_library(glad STATIC 
@@ -48,8 +46,9 @@ else()
             "GLFW_BUILD_EXAMPLES OFF"
             "GLFW_BUILD_TESTS OFF"
             "GLFW_INSTALL OFF"
+            "GLFW_BUILD_WAYLAND_LIBDECOR ON"
             "GLFW_BUILD_WAYLAND ON"
-            "GLFW_BUILD_X11 OFF"
+            "GLFW_BUILD_X11 ON"
     )
 endif()
 
@@ -97,4 +96,4 @@ if(glfw_ADDED)
     set_target_properties(glfw PROPERTIES COMPILE_FLAGS "-w")
 endif()
 
-message(STATUS "シンプルな依存関係設定完了")
+message(STATUS "依存ライブラリのインストール完了")
